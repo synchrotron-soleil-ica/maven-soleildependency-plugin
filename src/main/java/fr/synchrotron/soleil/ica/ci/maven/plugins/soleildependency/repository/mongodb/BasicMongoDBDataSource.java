@@ -1,7 +1,6 @@
 package fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.repository.mongodb;
 
 import com.mongodb.DB;
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 
 import java.net.UnknownHostException;
@@ -15,7 +14,7 @@ public class BasicMongoDBDataSource implements MongoDBDataSource {
     private static final int DEFAULT_MONGODB_PORT = 27017;
     private static final String DEFAULT_MONGODB_DBNAME = "artifactRepository";
 
-    private final Mongo mongo;
+    private final MongoClient mongo;
     private final String mongoDBName;
 
     public BasicMongoDBDataSource() {
