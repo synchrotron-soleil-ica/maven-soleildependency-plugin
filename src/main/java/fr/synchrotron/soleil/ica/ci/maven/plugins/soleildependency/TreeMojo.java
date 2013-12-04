@@ -291,32 +291,6 @@ public class TreeMojo extends AbstractMojo {
     }
 
 
-    private Artifact replaceArtifact(MetadataRetrieverService retrieverService, Artifact artifact) {
-
-        final CustomArtifact customArtifact = new CustomArtifact(artifact);
-        final Date creationDate = retrieverService.getCreationDate(artifact);
-        if (creationDate != null) {
-            customArtifact.setCreationDate(creationDate);
-        }
-        return customArtifact;
-
-    }
-
-    private DependencyNode replaceDependencyNode(MetadataRetrieverService retrieverService, DependencyNode dependencyNode) {
-
-        Artifact newArtifact = replaceArtifact(retrieverService, dependencyNode.getArtifact());
-        DependencyNode newDependencyNode = new DependencyNode(newArtifact);
-
-        final List childs = dependencyNode.getChildren();
-        if (childs.size() != 0) {
-            for (int i = 0; i < childs.size(); i++) {
-                DependencyNode curDependencyNode = (DependencyNode) childs.get(i);
-                newDependencyNode.addChild(replaceDependencyNode(retrieverService, curDependencyNode));
-            }
-        }
-        return newDependencyNode;
-    }
-
     /**
      * Serialises the specified dependency tree to a string.
      *
@@ -327,7 +301,7 @@ public class TreeMojo extends AbstractMojo {
 
         MetadataRetrieverService retrieverService = new MetadataRetrieverService(
                 new MongoDBMetadataRepository(
-                        new BasicMongoDBDataSource("localhost", 27017, "repo")));
+                        new BasicMongoDBDataSource("172.16.5.7", 27017, "repo")));
 
         DependencyNode newRootNode = replaceDependencyNode(retrieverService, rootNode);
 
@@ -353,6 +327,34 @@ public class TreeMojo extends AbstractMojo {
         newRootNode.accept(visitor);
 
         return writer.toString();
+    }
+
+    private DependencyNode replaceDependencyNode(MetadataRetrieverService retrieverService, DependencyNode dependencyNode) {
+
+        Artifact newArtifact = replaceArtifact(retrieverService, dependencyNode.getArtifact());
+        getLog().debug(newArtifact.toString());
+
+        DependencyNode newDependencyNode = new DependencyNode(newArtifact);
+        final List childs = dependencyNode.getChildren();
+        if (childs.size() != 0) {
+            for (int i = 0; i < childs.size(); i++) {
+                DependencyNode curDependencyNode = (DependencyNode) childs.get(i);
+                newDependencyNode.addChild(replaceDependencyNode(retrieverService, curDependencyNode));
+            }
+        }
+
+        return newDependencyNode;
+    }
+
+    private Artifact replaceArtifact(MetadataRetrieverService retrieverService, Artifact artifact) {
+
+        final CustomArtifact customArtifact = new CustomArtifact(artifact);
+        final Date creationDate = retrieverService.getCreationDate(artifact);
+        if (creationDate != null) {
+            customArtifact.setCreationDate(creationDate);
+        }
+        return customArtifact;
+
     }
 
     /**

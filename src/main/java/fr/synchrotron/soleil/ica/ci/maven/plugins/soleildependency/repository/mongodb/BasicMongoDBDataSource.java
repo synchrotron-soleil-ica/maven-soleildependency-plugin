@@ -39,12 +39,18 @@ public class BasicMongoDBDataSource implements MongoDBDataSource {
     }
 
     public DB getMongoDB() {
-        MongoClient mongoClient;
-        try {
-            mongoClient = new MongoClient(mongoHost, mongoPort);
-        } catch (UnknownHostException ue) {
-            throw new MongoDBException(ue);
+        return getMongoClient().getDB(mongoDBName);
+    }
+
+    private static MongoClient mongoClient;
+    private MongoClient getMongoClient() {
+        if (mongoClient == null) {
+            try {
+                mongoClient = new MongoClient(mongoHost, mongoPort);
+            } catch (UnknownHostException ue) {
+                throw new MongoDBException(ue);
+            }
         }
-        return mongoClient.getDB(mongoDBName);
+        return mongoClient;
     }
 }

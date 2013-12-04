@@ -22,9 +22,12 @@ public class MongoDBMetadataRepository implements MetadataRepository {
     public Date getCreationDate(Artifact artifact) {
         Date creationDate = null;
 
-        DBCursor cursor = null;
+        DB mongoDB = mongoDBDatasource.getMongoDB();
+        ;
         try {
-            DB mongoDB = mongoDBDatasource.getMongoDB();
+            mongoDB = mongoDBDatasource.getMongoDB();
+            mongoDB.requestStart();
+            mongoDB.requestEnsureConnection();
 
             DBCollection coll = mongoDB.getCollection(MONGODB_ARTIFACTS_COLLECTION);
             BasicDBObject doc =
@@ -34,7 +37,7 @@ public class MongoDBMetadataRepository implements MetadataRepository {
                             .append("status", "RELEASE")
                             .append("version", artifact.getVersion());
 
-            cursor = coll.find(doc);
+            DBCursor cursor = coll.find(doc);
             while (cursor.hasNext()) {
                 BasicDBObject docCurrent = (BasicDBObject) cursor.next();
                 creationDate = docCurrent.getDate("creatdate");
@@ -46,9 +49,7 @@ public class MongoDBMetadataRepository implements MetadataRepository {
             }
 
         } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+            mongoDB.requestDone();
         }
 
         return creationDate;
