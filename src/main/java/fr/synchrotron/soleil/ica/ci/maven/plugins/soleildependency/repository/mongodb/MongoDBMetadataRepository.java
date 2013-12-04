@@ -20,24 +20,24 @@ public class MongoDBMetadataRepository implements MetadataRepository {
     }
 
     public Date getCreationDate(Artifact artifact) {
-        Date creationDate = null;
 
-        DB mongoDB = mongoDBDatasource.getMongoDB();
-        ;
+        DB mongoDB = null;
+        Date creationDate = null;
+        DBCursor cursor = null;
         try {
             mongoDB = mongoDBDatasource.getMongoDB();
             mongoDB.requestStart();
             mongoDB.requestEnsureConnection();
 
             DBCollection coll = mongoDB.getCollection(MONGODB_ARTIFACTS_COLLECTION);
-            BasicDBObject doc =
+            BasicDBObject query =
                     new BasicDBObject("org", artifact.getGroupId())
                             .append("name", artifact.getArtifactId())
                             .append("type", "binary")
                             .append("status", "RELEASE")
                             .append("version", artifact.getVersion());
 
-            DBCursor cursor = coll.find(doc);
+            cursor = coll.find(query);
             while (cursor.hasNext()) {
                 BasicDBObject docCurrent = (BasicDBObject) cursor.next();
                 creationDate = docCurrent.getDate("creatdate");
@@ -49,6 +49,9 @@ public class MongoDBMetadataRepository implements MetadataRepository {
             }
 
         } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
             mongoDB.requestDone();
         }
 
