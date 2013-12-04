@@ -1,6 +1,7 @@
 package fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.repository.mongodb;
 
 import com.mongodb.DB;
+import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 
 import java.net.UnknownHostException;
@@ -14,43 +15,38 @@ public class BasicMongoDBDataSource implements MongoDBDataSource {
     private static final int DEFAULT_MONGODB_PORT = 27017;
     private static final String DEFAULT_MONGODB_DBNAME = "artifactRepository";
 
-    private final String mongoHost;
-
-    private final int mongoPort;
-
+    private final Mongo mongo;
     private final String mongoDBName;
 
     public BasicMongoDBDataSource() {
-        this.mongoHost = DEFAULT_MONGODB_HOST;
-        this.mongoPort = DEFAULT_MONGODB_PORT;
+        try {
+            mongo = new MongoClient(DEFAULT_MONGODB_HOST, DEFAULT_MONGODB_PORT);
+        } catch (UnknownHostException ue) {
+            throw new MongoDBException(ue);
+        }
         this.mongoDBName = DEFAULT_MONGODB_DBNAME;
     }
 
     public BasicMongoDBDataSource(String mongoHost, int mongoPort, String mongoDBName) {
-        this.mongoHost = mongoHost;
-        this.mongoPort = mongoPort;
+        try {
+            mongo = new MongoClient(mongoHost, mongoPort);
+        } catch (UnknownHostException ue) {
+            throw new MongoDBException(ue);
+        }
         this.mongoDBName = mongoDBName;
     }
 
     public BasicMongoDBDataSource(String mongoHost, int mongoPort) {
-        this.mongoHost = mongoHost;
-        this.mongoPort = mongoPort;
+        try {
+            mongo = new MongoClient(mongoHost, mongoPort);
+        } catch (UnknownHostException ue) {
+            throw new MongoDBException(ue);
+        }
         this.mongoDBName = DEFAULT_MONGODB_DBNAME;
     }
 
     public DB getMongoDB() {
-        return getMongoClient().getDB(mongoDBName);
+        return mongo.getDB(mongoDBName);
     }
 
-    private static MongoClient mongoClient;
-    private MongoClient getMongoClient() {
-        if (mongoClient == null) {
-            try {
-                mongoClient = new MongoClient(mongoHost, mongoPort);
-            } catch (UnknownHostException ue) {
-                throw new MongoDBException(ue);
-            }
-        }
-        return mongoClient;
-    }
 }
