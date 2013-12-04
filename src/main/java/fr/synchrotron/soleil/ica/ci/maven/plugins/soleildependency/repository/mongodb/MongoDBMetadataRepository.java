@@ -31,7 +31,8 @@ public class MongoDBMetadataRepository implements MetadataRepository {
                     new BasicDBObject("org", artifact.getGroupId())
                             .append("name", artifact.getArtifactId())
                             .append("type", "binary")
-                            .append("status", "RELEASE");
+                            .append("status", "RELEASE")
+                            .append("version", artifact.getVersion());
 
             cursor = coll.find(doc);
             while (cursor.hasNext()) {
