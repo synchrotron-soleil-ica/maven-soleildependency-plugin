@@ -1,6 +1,7 @@
 package fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.repository.mongodb;
 
 import com.mongodb.*;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBDataSource;
 import fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.repository.MetadataRepository;
 import org.apache.maven.artifact.Artifact;
 

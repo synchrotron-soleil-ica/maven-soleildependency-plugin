@@ -37,12 +37,31 @@
     </developers>
 
     <properties>
+        <maven.compiler.source>1.5</maven.compiler.source>
+        <maven.compiler.target>1.5</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.version>2.0.9</maven.version>
+         <mongodb-util.version>1.0.0</mongodb-util.version>
         <mongo-java-driver.version>2.11.3</mongo-java-driver.version>
     </properties>
 
-    <dependencies>
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/synchrotron-soleil-ica/ci-artifacts</url>
+        </repository>
+    </repositories>
 
+    <dependencies>
+        <dependency>
+            <groupId>fr.synchrotron.soleil.ica.ci.lib</groupId>
+            <artifactId>mongodb-util</artifactId>
+            <version>${mongodb-util.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>

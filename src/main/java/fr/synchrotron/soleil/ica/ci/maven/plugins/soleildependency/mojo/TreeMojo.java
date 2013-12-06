@@ -19,8 +19,8 @@ package fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.mojo;
  * under the License.    
  */
 
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.BasicMongoDBDataSource;
 import fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.domain.CustomArtifact;
-import fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.repository.mongodb.BasicMongoDBDataSource;
 import fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.repository.mongodb.MongoDBMetadataRepository;
 import fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.service.ArtifactCustomCreatorService;
 import fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.service.DependencyNodeTreeReplacerService;
@@ -237,7 +237,7 @@ public class TreeMojo extends AbstractMojo {
 
             MetadataRetrieverService metadataRetrieverService =
                     new MetadataRetrieverService(
-                            new MongoDBMetadataRepository(new BasicMongoDBDataSource("172.16.5.7", 27017, "repo")));
+                            new MongoDBMetadataRepository(new BasicMongoDBDataSource("localhost", 27017, "repo")));
             FileWriter fileWriter = new FileWriter(new File("export-dependency.csv"));
             fileWriter.append(CustomArtifact.toCsvHeaders());
 
