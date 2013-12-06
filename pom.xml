@@ -37,11 +37,11 @@
     </developers>
 
     <properties>
-        <maven.compiler.source>1.5</maven.compiler.source>
-        <maven.compiler.target>1.5</maven.compiler.target>
+        <maven.compiler.source>1.4</maven.compiler.source>
+        <maven.compiler.target>1.4</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.version>2.0.9</maven.version>
-         <mongodb-util.version>1.0.0</mongodb-util.version>
+         <mongodb-util.version>1.0.1</mongodb-util.version>
         <mongo-java-driver.version>2.11.3</mongo-java-driver.version>
     </properties>
 
