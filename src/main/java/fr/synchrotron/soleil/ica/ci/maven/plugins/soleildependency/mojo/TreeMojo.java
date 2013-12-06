@@ -20,6 +20,7 @@ package fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.mojo;
  */
 
 import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.BasicMongoDBDataSource;
+import fr.synchrotron.soleil.ica.ci.lib.mongodb.util.MongoDBInstance;
 import fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.domain.CustomArtifact;
 import fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.repository.mongodb.MongoDBMetadataRepository;
 import fr.synchrotron.soleil.ica.ci.maven.plugins.soleildependency.service.ArtifactCustomCreatorService;
@@ -191,6 +192,35 @@ public class TreeMojo extends AbstractMojo {
     private String excludes;
 
     /**
+     * The list of mongoInstances
+     *
+     * @parameter expression="${mongoInstances}"
+     */
+    private ArrayList mongoDBInstances;
+
+
+    /**
+     * The single mongoDB host
+     *
+     * @parameter expression="${mongoDBHost}"
+     */
+    private String mongoDBHost;
+
+    /**
+     * The single mongoDB port
+     *
+     * @parameter expression="${mongoDBPort}"
+     */
+    private int mongoDBPort;
+
+    /**
+     * The list of mongo DB Name
+     *
+     * @parameter expression="${mongDBName}"
+     */
+    private String mongDBName;
+
+    /**
      * Runtime Information used to check the Maven version
      *
      * @component role="org.apache.maven.execution.RuntimeInformation"
@@ -203,12 +233,27 @@ public class TreeMojo extends AbstractMojo {
      */
     private DependencyNode rootNode;
 
+
     // Mojo methods -----------------------------------------------------------
 
     /*
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
+
+        if (mongoDBInstances == null) {
+            if (mongoDBHost != null && mongoDBPort != 0) {
+                mongoDBInstances = (ArrayList) Arrays.asList(new MongoDBInstance[]{new MongoDBInstance(mongoDBHost, mongoDBPort)});
+            }
+            mongoDBInstances = (ArrayList) Arrays.asList(new MongoDBInstance[]{new MongoDBInstance("localhost", 27017)});
+        }
+
+        if (mongDBName == null) {
+            mongDBName = "repo";
+        }
+        MetadataRetrieverService metadataRetrieverService =
+                new MetadataRetrieverService(
+                        new MongoDBMetadataRepository(new BasicMongoDBDataSource(mongoDBInstances, mongDBName)));
 
         ArtifactVersion detectedMavenVersion = rti.getApplicationVersion();
         VersionRange vr;
@@ -235,9 +280,6 @@ public class TreeMojo extends AbstractMojo {
                     dependencyTreeBuilder.buildDependencyTree(project, localRepository, artifactFactory,
                             artifactMetadataSource, artifactFilter, artifactCollector);
 
-            MetadataRetrieverService metadataRetrieverService =
-                    new MetadataRetrieverService(
-                            new MongoDBMetadataRepository(new BasicMongoDBDataSource("localhost", 27017, "repo")));
             FileWriter fileWriter = new FileWriter(new File("export-dependency.csv"));
             fileWriter.append(CustomArtifact.toCsvHeaders());
 
